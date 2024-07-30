@@ -10,7 +10,7 @@ def get_args():
     """
     usage = ""
     parser = argparse.ArgumentParser(prog="Email2PDF", usage="", add_help=True)
-    parser.add_argument("-s", "--source", type=str, nargs="?", help="Coma seperated list of eml files.")
+    parser.add_argument("-s", "--source", nargs="+", help="Coma separated list of eml files.")
     parser.add_argument("-o", "--output", type=str, nargs=1, help="An output path, if different from the "
                                                                   "working path.")
     parser.add_argument("-on", "--output_name", type=str, nargs=1, help="Pattern to use for file name. "
