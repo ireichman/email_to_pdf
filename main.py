@@ -54,9 +54,21 @@ def check_file_or_path_exists(file_or_path: str) -> bool:
 #     return {"file_exists": True, "message": f"{file_extension}"}
 
 
-def convert_to_pdf(html_string: str, output, output_naming_template: str) -> bool:
+def convert_to_pdf(html_string: str, output_file_name_and_path: str) -> bool:
+    """
+    Converts a string with HTML to a PDF and saves the file.
+    :param html_string: A string of HTML.
+    :param output_file_name_and_path: A string with a file name and a path.
+    :return: A boolean. True if conversion successful. Falso if not.
+    """
+    try:
+        html2pdf(string=html_string).write_pdf(output_file_name_and_path)
+    except Exception as error:
+        logger.error(f"Converting HTML string to PDF encountered an error: {error}")
+        return False
+    return True
 
-    pass
+
 if __name__ == "__main__":
     print("Starting program...")
 
@@ -68,7 +80,7 @@ if args.source:
     list_of_emails: list = args.source
     logger.info(f"Files to convert to PDF:\n{list_of_emails}")
     # Checking that the email files exist in the OS.
-    list_of_emails_validated = filter(check_file_or_path_exists, list_of_emails)
+    list_of_emails_validated = list(filter(check_file_or_path_exists, list_of_emails))
     # Comparing the list of emails from argparse and the subsection of the same files that exist in the OS.
     files_not_in_the_os = list(set(list_of_emails) ^ set(list_of_emails_validated))
     logger.info(f"Files that are not found in the OS: {files_not_in_the_os}")
@@ -80,7 +92,7 @@ if args.source:
 # Check that args.output gives a real path.
 if args.output:
     logger.info(f"Argument received from output parameter: {args.output}")
-    output_path: str = args.output
+    output_path: str = args.output[0]
     # Check if path exist in the system.
     path_validated = check_file_or_path_exists(output_path)
     if not path_validated:
@@ -93,9 +105,10 @@ if args.output_name:
 
 # Parsing the emails and makes a list of strings. Each string is an HTML.
 list_of_emails_parsed = map(parse_mail, list_of_emails_validated)
+logger.info(f"Parsed the list of email.")
 
-# print(f"{mail["subject"]}\n{mail["date"]}\n{mail["body"]}")
-
-# html2pdf(string=mail["body"]).write_pdf("pdf.pdf")
+# Convert HTML string from parsed email to PDF.
+for email in list_of_emails_parsed:
+    convert_to_pdf(html_string=email["body"], output_file_name_and_path=output_path)
 
 import pdb; pdb.set_trace()
