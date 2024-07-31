@@ -82,11 +82,17 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
         # Remove the file path and  extension.
         email_file_parts = Path(email_name)
         name: str = email_file_parts.stem #email_name.split("/")[-1].split(".")[0]
+
     if output_path:
         name = output_path + name
         path: str = output_path
-    if check_file_or_path_exists(name + ".pdf"):
-        pdf_name = name + "-1"
+    # Testing if file already exists and renaming if it does.
+    while check_file_or_path_exists(name + ".pdf"):
+        counter = 1
+        name = name + f"-{counter}"
+        if counter == 100:
+            logger.critical(f"100 or more instances of file {name + ".pdf"} already exist.")
+
     else:
         pdf_name = name
 
@@ -141,6 +147,7 @@ logger.info(f"Parsed the list of email.")
 # TODO: Add option for overwriting files???
 # TODO: Make argparse
 # TODO: Add option to print multipel emails to 1 pdf.
+# TODO: Add ability to get date from email (both metadata and text) for use with file name.
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
