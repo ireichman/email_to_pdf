@@ -24,7 +24,7 @@ def parse_mail(mail: str) -> dict:
     body = mail.body
     body_html_only = body.split("<head>")[1]
     body_html_only_fixed = "<head>" + body_html_only
-    email_data = {"subject": subject, "date": date, "body": body_html_only_fixed}
+    email_data = {"email_file": email, "subject": subject, "date": date, "body": body_html_only_fixed}
     logger.info(f"email was parsed successfully. Email info:\n{email_data}")
     return email_data
 
@@ -69,6 +69,19 @@ def convert_to_pdf(html_string: str, output_file_name_and_path: str) -> bool:
     return True
 
 
+def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: str = None):
+
+    if output_path:
+        path: str = output_path
+    if naming_pattern:
+        naming_pattern: str = naming_pattern
+    if email_name:
+        name: str = email_name
+
+
+
+    pass
+
 if __name__ == "__main__":
     print("Starting program...")
 
@@ -106,6 +119,10 @@ if args.output_name:
 # Parsing the emails and makes a list of strings. Each string is an HTML.
 list_of_emails_parsed = map(parse_mail, list_of_emails_validated)
 logger.info(f"Parsed the list of email.")
+
+# TODO: Add naming mechanisms. If pattern not specified, use the original email. If the name already exists add a - number
+# TODO: If pattern is provided, name files pattern-1, pattern-2.
+# TODO: Add option for overwriting files???
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
