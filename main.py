@@ -2,6 +2,7 @@ import mailparser
 from weasyprint import HTML as html2pdf
 from loguru import logger
 import os
+from pathlib import Path
 from argparse_class import get_args
 
 
@@ -12,19 +13,20 @@ def parse_mail(mail: str) -> dict:
     :return: a dictionary with information from the email. Including the body of the email.
     """
     # Parse eml
-    logger.info(f"Parsing email from string {mail}")
+    logger.info(f"Parsing email from {mail}")
     try:
-        mail = mailparser.parse_from_file(mail)
+        email = mailparser.parse_from_file(mail)
+        logger.info(f"Successfully parsed {mail}")
     except Exception as error:
         logger.error(f"Failed to parse email with error\n{error}")
 
     # Find info in email object.
-    subject = mail.subject
-    date = mail.date
-    body = mail.body
+    subject = email.subject
+    date = email.date
+    body = email.body
     body_html_only = body.split("<head>")[1]
     body_html_only_fixed = "<head>" + body_html_only
-    email_data = {"email_file": email, "subject": subject, "date": date, "body": body_html_only_fixed}
+    email_data = {"email_file": mail, "subject": subject, "date": date, "body": body_html_only_fixed}
     logger.info(f"email was parsed successfully. Email info:\n{email_data}")
     return email_data
 
@@ -37,7 +39,7 @@ def check_file_or_path_exists(file_or_path: str) -> bool:
     """
     # Check that file exists.
     if not os.path.exists(file_or_path):
-        logger.error(f"Could not find {file_or_path}")
+        logger.info(f"Could not find {file_or_path}")
         return False
     else:
         return True
@@ -71,16 +73,26 @@ def convert_to_pdf(html_string: str, output_file_name_and_path: str) -> bool:
 
 def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: str = None):
 
-    if output_path:
-        path: str = output_path
+    logger.info(f"Naming the PDF using naming_pattern: {naming_pattern}, output_path: {output_path} and email_name: "
+                f"{email_name}")
     if naming_pattern:
-        naming_pattern: str = naming_pattern
-    if email_name:
-        name: str = email_name
+        # Remove the file extension, if exists.
+        name: str = naming_pattern.split(".")[0]
+    else:
+        # Remove the file path and  extension.
+        email_file_parts = Path(email_name)
+        name: str = email_file_parts.stem #email_name.split("/")[-1].split(".")[0]
+    if output_path:
+        name = output_path + name
+        path: str = output_path
+    if check_file_or_path_exists(name + ".pdf"):
+        pdf_name = name + "-1"
+    else:
+        pdf_name = name
 
+    pdf_name = pdf_name + ".pdf"
+    return pdf_name
 
-
-    pass
 
 if __name__ == "__main__":
     print("Starting program...")
@@ -111,21 +123,28 @@ if args.output:
     if not path_validated:
         print(f"Path does not exist: {output_path}")
         exit()
+else:
+    path_validated = ""
 
 if args.output_name:
     logger.info(f"Argument received from output_name parameter: {args.output_name}")
     output_file_name: str = args.output_name
+else:
+    output_file_name = ""
 
 # Parsing the emails and makes a list of strings. Each string is an HTML.
 list_of_emails_parsed = map(parse_mail, list_of_emails_validated)
 logger.info(f"Parsed the list of email.")
 
 # TODO: Add naming mechanisms. If pattern not specified, use the original email. If the name already exists add a - number
-# TODO: If pattern is provided, name files pattern-1, pattern-2.
+# TODO: If pattern is provided, name files pattern-1, pattern-2. FIX THAT!
 # TODO: Add option for overwriting files???
+# TODO: Make argparse
+# TODO: Add option to print multipel emails to 1 pdf.
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
-    convert_to_pdf(html_string=email["body"], output_file_name_and_path=output_path)
+    pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
+    convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
 
 import pdb; pdb.set_trace()
