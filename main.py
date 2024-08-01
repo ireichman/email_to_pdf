@@ -3,7 +3,7 @@ from weasyprint import HTML as html2pdf
 from loguru import logger
 import os
 from pathlib import Path
-from argparse_class import get_args
+from argparse_funct import get_args
 
 
 def parse_mail(mail: str) -> dict:
@@ -86,11 +86,23 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
     if output_path:
         name = output_path + name
         path: str = output_path
+
     # Testing if file already exists and renaming if it does.
     while check_file_or_path_exists(name + ".pdf"):
-        counter = 1
-        name = name + f"-{counter}"
-        if counter == 100:
+        logger.info(f"Found that file {name + ".pdf"} already exists")
+        name_split_by_dash = name.rsplit(sep="-", maxsplit=1)
+        logger.debug(f"Split {name} to {name_split_by_dash}")
+        try:
+            serial_number_for_file_ending = name_split_by_dash[-1]
+            name = name_split_by_dash[0]
+            # Checking if the file ends with a number
+            int(serial_number_for_file_ending)
+        except Exception as error:
+            logger.error(f"Error when parsing file name: {error}")
+            serial_number_for_file_ending = 0
+        name = name + f"-{int(serial_number_for_file_ending) + 1}"
+
+        if int(serial_number_for_file_ending) >= 100:
             logger.critical(f"100 or more instances of file {name + ".pdf"} already exist.")
 
     else:
