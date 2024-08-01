@@ -19,6 +19,7 @@ def parse_mail(mail: str) -> dict:
         logger.info(f"Successfully parsed {mail}")
     except Exception as error:
         logger.error(f"Failed to parse email with error\n{error}")
+        print(f"Could not process email: {mail}")
 
     # Find info in email object.
     subject = email.subject
@@ -154,8 +155,6 @@ else:
 list_of_emails_parsed = map(parse_mail, list_of_emails_validated)
 logger.info(f"Parsed the list of email.")
 
-# TODO: Add naming mechanisms. If pattern not specified, use the original email. If the name already exists add a - number
-# TODO: If pattern is provided, name files pattern-1, pattern-2. FIX THAT!
 # TODO: Add option for overwriting files???
 # TODO: Make argparse
 # TODO: Add option to print multipel emails to 1 pdf.
@@ -165,5 +164,6 @@ logger.info(f"Parsed the list of email.")
 for email in list_of_emails_parsed:
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
     convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
+    logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
+    print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
 
-import pdb; pdb.set_trace()
