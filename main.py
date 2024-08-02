@@ -114,9 +114,9 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
 
 
 if __name__ == "__main__":
+    args = get_args()
     print("Starting program...")
 
-args = get_args()
 
 # Compile a list of files to convert and check if they exist in the OS.
 if args.source:

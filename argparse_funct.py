@@ -8,7 +8,9 @@ def get_args():
     Parse command line arguments.
     :return: Return parsed args.
     """
-    usage = ""
+    usage = ("Run tha application using `python main.py -source <file1.eml file2.eml>` This will convert the emails while"
+             " keeping their file names.")
+
     parser = argparse.ArgumentParser(prog="Email2PDF", usage="", add_help=True)
     parser.add_argument("-s", "--source", required=True, nargs="+", help="Coma separated list of eml files.")
     parser.add_argument("-o", "--output", required=False, type=str, nargs=1, help="Specify an output path, "
