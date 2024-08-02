@@ -78,7 +78,7 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
                 f"{email_name}")
     if naming_pattern:
         # Remove the file extension, if exists.
-        name: str = naming_pattern.split(".")[0]
+        name: str = naming_pattern[0].split(".")[0]
     else:
         # Remove the file path and  extension.
         email_file_parts = Path(email_name)
