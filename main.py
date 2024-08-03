@@ -24,10 +24,16 @@ def parse_mail(mail: str) -> dict:
     # Find info in email object.
     subject = email.subject
     date = email.date
-    body = email.body
-    body_html_only = body.split("<head>")[1]
-    body_html_only_fixed = "<head>" + body_html_only
-    email_data = {"email_file": mail, "subject": subject, "date": date, "body": body_html_only_fixed}
+    body_html = email.text_html[0]
+    # body = email.body if email.body else email.text_plain[0]
+    try:
+        body_html_only = body.split("<head>")[1]
+        body_html_only_fixed = "<head>" + body_html_only
+    except Exception as error:
+        logger.info(f"{mail} did not have a head section.")
+        body_html_only_fixed = False
+    email_data = {"email_file": mail, "subject": subject, "date": date, "body": body_html_only_fixed
+                    if body_html_only_fixed else body_html}
     logger.info(f"email was parsed successfully. Email info:\n{email_data}")
     return email_data
 
@@ -38,11 +44,13 @@ def check_file_or_path_exists(file_or_path: str) -> bool:
     :param file_or_path: A string which is a path of a file with path.
     :return: Boolean.
     """
+    logger.info(f"Checking if {file_or_path} exists in the OS' file system.")
     # Check that file exists.
     if not os.path.exists(file_or_path):
         logger.info(f"Could not find {file_or_path}")
         return False
     else:
+        logger.info(f"Found {file_or_path} in the OS' file system.")
         return True
 
 # def check_file_extension(file_with_path: str) -> bool:
@@ -140,7 +148,8 @@ if args.output:
     # Check if path exist in the system.
     path_validated = check_file_or_path_exists(output_path)
     if not path_validated:
-        print(f"Path does not exist: {output_path}")
+        print(f"Path does not exist: {output_path}. Please provide a valid path with -o or --output option."
+              f"\nAlternatively you could not specify this option to save in the same directory you run it from.")
         exit()
 else:
     path_validated = ""
