@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from argparse_funct import get_args
 
+# TODO: Try parsing emails with email module and compare to emailparser.
 
 def parse_mail(mail: str) -> dict:
     """
