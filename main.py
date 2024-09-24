@@ -1,5 +1,6 @@
 import mailparser
 from weasyprint import HTML as html2pdf
+import pdfkit
 from loguru import logger
 import os
 from pathlib import Path
