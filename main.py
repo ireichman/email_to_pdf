@@ -1,11 +1,12 @@
-import mailparser
-from weasyprint import HTML as html2pdf
+# import mailparser
+# from weasyprint import HTML as html2pdf
 import pdfkit
 from loguru import logger
 import os
 from pathlib import Path
 from argparse_funct import get_args
 from email_to_html import EmailToHtml
+from html_to_pdf import HtmlToPdf
 
 # TODO: Try parsing emails with email module and compare to emailparser.
 # TODO: Try creating pdf with PDFkit.
@@ -182,7 +183,9 @@ logger.info(f"Parsed the list of email.")
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
-    convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
+    # convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
+    pdf_o = HtmlToPdf(html_data=email["body"], output_file_name_and_path=pdf_name)
+    pdf_o.create_pdf()
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
 

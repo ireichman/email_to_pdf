@@ -18,8 +18,9 @@ class HtmlToPdf:
 
     def create_pdf(self):
 
+        logger.info(f"Starting HTML to PDF conversion with output: {self.output}")
         try:
-            pdfkit.from_file(input=self.html_data, output_path=self.output)
+            pdfkit.from_string(input=self.html_data, output_path=self.output)
         except Exception as error:
             logger.error(f"Error while converting HTML to PDF. \n{error}")
             return False
