@@ -179,13 +179,15 @@ logger.info(f"Parsed the list of email.")
 # TODO: Add option for overwriting files???
 # TODO: Add option to print multiple emails to 1 pdf.
 # TODO: Add ability to get date from email (both metadata and text) for use with file name.
+# TODO: Add verbosity.
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
     # convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
-    pdf_o = HtmlToPdf(html_data=email["body"], output_file_name_and_path=pdf_name)
-    pdf_o.create_pdf()
+    pdf_o = pdfkit.PDFKit(url_or_file=email["body"], type_="string", verbose=True) #HtmlToPdf(html_data=email["body"], output_file_name_and_path=pdf_name)
+    # pdf_o.create_pdf_from_string()
+    pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
 
