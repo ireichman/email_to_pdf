@@ -1,45 +1,11 @@
-import mailparser
-from weasyprint import HTML as html2pdf
-import pdfkit
+
+from pdfkit import PDFKit
 from loguru import logger
 import os
 from pathlib import Path
 from argparse_funct import get_args
 from email_to_html import EmailToHtml
-
-# TODO: Try parsing emails with email module and compare to emailparser.
-# TODO: Try creating pdf with PDFkit.
-
-# def parse_mail(mail: str) -> dict:
-#     """
-#     Parse emails for data.
-#     :param mail: location of an email file as a string.
-#     :return: a dictionary with information from the email. Including the body of the email.
-#     """
-#     # Parse eml
-#     logger.info(f"Parsing email from {mail}")
-#     try:
-#         email = mailparser.parse_from_file(mail)
-#         logger.info(f"Successfully parsed {mail}")
-#     except Exception as error:
-#         logger.error(f"Failed to parse email with error\n{error}")
-#         print(f"Could not process email: {mail}")
-#
-#     # Find info in email object.
-#     subject = email.subject
-#     date = email.date
-#     body_html = email.text_html[0]
-#     # body = email.body if email.body else email.text_plain[0]
-#     try:
-#         body_html_only = body.split("<head>")[1]
-#         body_html_only_fixed = "<head>" + body_html_only
-#     except Exception as error:
-#         logger.info(f"{mail} did not have a head section.")
-#         body_html_only_fixed = False
-#     email_data = {"email_file": mail, "subject": subject, "date": date, "body": body_html_only_fixed
-#                     if body_html_only_fixed else body_html}
-#     logger.info(f"email was parsed successfully. Email info:\n{email_data}")
-#     return email_data
+from html_to_pdf import HtmlToPdf
 
 def parse_email(mail_file: str) -> dict:
 
@@ -63,33 +29,6 @@ def check_file_or_path_exists(file_or_path: str) -> bool:
     else:
         logger.info(f"Found {file_or_path} in the OS' file system.")
         return True
-
-# def check_file_extension(file_with_path: str) -> bool:
-#     # Find the file's extension.
-#     try:
-#         file_extension = file_with_path.split(".")[1]
-#     except Exception as error:
-#         logger.error(f"Could not find file's extension. Error:\n{error}")
-#
-#     if
-#     # Add file validation?
-#     return {"file_exists": True, "message": f"{file_extension}"}
-
-
-def convert_to_pdf(html_string: str, output_file_name_and_path: str) -> bool:
-    """
-    Converts a string with HTML to a PDF and saves the file.
-    :param html_string: A string of HTML.
-    :param output_file_name_and_path: A string with a file name and a path.
-    :return: A boolean. True if conversion successful. Falso if not.
-    """
-    try:
-        html2pdf(string=html_string).write_pdf(output_file_name_and_path)
-    except Exception as error:
-        logger.error(f"Converting HTML string to PDF encountered an error: {error}")
-        return False
-    return True
-
 
 def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: str = None):
 
@@ -178,11 +117,13 @@ logger.info(f"Parsed the list of email.")
 # TODO: Add option for overwriting files???
 # TODO: Add option to print multiple emails to 1 pdf.
 # TODO: Add ability to get date from email (both metadata and text) for use with file name.
+# TODO: Add verbosity.
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
-    convert_to_pdf(html_string=email["body"], output_file_name_and_path=pdf_name)
+    pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=True)
+    pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
 
