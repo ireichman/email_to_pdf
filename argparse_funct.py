@@ -27,6 +27,6 @@ def get_args():
                                                                         "The output file will be added a number if more"
                                                                         " then one file is processed. If no name is "
                                                                         "given, the email's file name will be used.")
-    parser.add_argument("-v", "--verbose", type=bool, help="")
+    parser.add_argument("-v", "--verbose", action="store_true", help="")
 
     return parser.parse_args()

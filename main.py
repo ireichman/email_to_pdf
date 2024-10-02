@@ -1,3 +1,4 @@
+import sys
 
 from pdfkit import PDFKit
 from loguru import logger
@@ -12,6 +13,10 @@ from utils import pdf_naming, parse_email, check_file_or_path_exists
 if __name__ == "__main__":
     args = get_args()
     print("Starting program...")
+logger.remove()
+if args.verbose:
+    print("Verbose messaging enabled.")
+    logger.add(sink=sys.stderr, level="DEBUG")
 
 # Compile a list of files to convert and check if they exist in the OS.
 if args.source:
