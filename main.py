@@ -70,4 +70,4 @@ for email in list_of_emails_parsed:
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
 
-print(f"Finished converting {len(args.source)} emails to PDFs")
+print(f"Finished converting {len(args.source)} emails to PDFs.")
