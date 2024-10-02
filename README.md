@@ -22,7 +22,7 @@
 
 
 ### Instructions:
-* This application requires python 3.10 installed on your system.
+* This application requires python 3.12 installed on your system.
 * In addition wkhtmltopdf is required. It can be installed on Ubuntu / Debian with `sudo apt install wkhtmltopdf`, 
   or find a download for your platofrm [here](https://wkhtmltopdf.org/downloads.html).
 * Run tha application using `python main.py --source <file1.eml file2.eml>` This will convert the emails while keeping
