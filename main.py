@@ -8,7 +8,7 @@ from utils import pdf_naming, parse_email, check_file_or_path_exists
 # TODO: Add option for overwriting files???
 # TODO: Add option to print multiple emails to 1 pdf.
 # TODO: Add ability to get date from email (both metadata and text) for use with file name.
-# TODO: 1
+# TODO: Check for name split by '_' not just '-'. Change default naming to under score.
 
 if __name__ == "__main__":
     args = get_args()
@@ -59,7 +59,7 @@ else:
 
 # Parsing the emails and makes a list of strings. Each string is an HTML.
 list_of_emails_parsed = map(parse_email, list_of_emails_validated)
-logger.info(f"Parsed the list of email.")
+logger.info(f"Parsed the list of emails.")
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:

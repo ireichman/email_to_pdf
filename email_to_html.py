@@ -3,6 +3,7 @@ Class for converting emails to HTML
 """
 from email.parser import BytesParser
 from email import policy
+from loguru import logger
 
 
 class EmailToHtml:
@@ -29,8 +30,18 @@ class EmailToHtml:
         self.email_date: str = email_msg["date"]
 
         # Get the body of the email message.
-        email_body = email_msg.get_body()
-        return email_body.get_content()
+        try:
+            email_body = email_msg.get_body()
+        except Exception as error:
+            logger.error(f"Error while getting email body. Error:\n{error}")
+
+        # Get the HTML content of the email's body element.
+        try:
+            email_body_content = email_body.get_content()
+        except Exception as error:
+            logger.error(f"Error while getting email body's content. Error:\n{error}")
+
+        return email_body_content
 
 
 # m = EmailToHtml("/home/i/git/email_to_pdf/email.eml")
