@@ -17,6 +17,7 @@ class EmailToHtml:
         self.email_subject: str = ""
         self.email_date: str = ""
         self.msg: object = None
+        self.msg_is_multipart: bool = False
 
     def email_to_object(self):
 
@@ -29,9 +30,9 @@ class EmailToHtml:
             logger.error(f"Error when opening file {email_file}. Error:\n{error}")
             self.msg = None
 
-    def is_msg_multipart(self) -> bool:
+    def is_msg_multipart(self):
         if self.msg:
-            return self.msg.is_multipart()
+            self.msg_is_multipart: bool = self.msg.is_multipart()
 
     def email_file_to_html(self):
 
@@ -45,17 +46,24 @@ class EmailToHtml:
         self.email_subject: str = email_msg["subject"]
         self.email_date: str = email_msg["date"]
 
-        # Get the body of the email message.
-        try:
-            email_body = email_msg.get_body()
-        except Exception as error:
-            logger.error(f"Error while getting email body. Error:\n{error}")
+        if self.msg_is_multipart:
 
-        # Get the HTML content of the email's body element.
-        try:
-            email_body_content = email_body.get_content()
-        except Exception as error:
-            logger.error(f"Error while getting email body's content. Error:\n{error}")
+
+
+            pass
+
+        else:
+        # Get the body of the email message.
+            try:
+                email_body = email_msg.get_body()
+            except Exception as error:
+                logger.error(f"Error while getting email body. Error:\n{error}")
+
+            # Get the HTML content of the email's body element.
+            try:
+                email_body_content = email_body.get_content()
+            except Exception as error:
+                logger.error(f"Error while getting email body's content. Error:\n{error}")
 
         return email_body_content
 
