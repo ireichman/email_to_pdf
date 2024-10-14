@@ -36,6 +36,7 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
                 f"{email_name}")
     if naming_pattern:
         # Remove the file extension, if exists.
+        logger.debug(f"Removing file extension.")
         name: str = naming_pattern[0].split(".")[0]
     else:
         # Remove the file path and  extension.
@@ -43,7 +44,8 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
         name: str = email_file_parts.stem #email_name.split("/")[-1].split(".")[0]
 
     if output_path:
-        name = output_path + name
+        logger.debug(f"Adding user's path ({output_path}) to name ({name}).")
+        name: str = output_path + name
         path: str = output_path
 
     # Testing if file already exists and renaming if it does.

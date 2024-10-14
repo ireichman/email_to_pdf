@@ -49,7 +49,7 @@ if args.output:
               f"\nAlternatively you could not specify this option to save in the same directory you run it from.")
         exit()
 else:
-    path_validated = ""
+    output_path = ""
 
 if args.output_name:
     logger.info(f"Argument received from output_name parameter: {args.output_name}")
@@ -64,7 +64,7 @@ logger.info(f"Parsed the list of emails.")
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     print(f"Processing {email["email_file"]}")
-    pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
+    pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=output_path, email_name=email["email_file"])
     pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose)
     pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
