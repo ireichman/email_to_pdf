@@ -93,9 +93,18 @@ class EmailToHtml:
         for part in email_parts:
             logger.debug(f"Processing {self.email_file} part {part}")
             content_type = part.get_content_type()
-            if content_type == "text/html":
-                html_part = part.get_payload(decode=True).decode(part.get_content_charset())
+            if content_type == "text/html" or content_type == 'multipart/alternative':
+                # html_part = part.get_payload(decode=True).decode(part.get_content_charset())
+                html_parts = part.get_payload()
+                if isinstance(html_parts, list):
+                    for html_part_object in html_parts:
+                        if html_part_object.get_content_type() == "text/html":
+                            try:
+                                html_part = html_part_object.get_content()
+                            except Exception as error:
+                                logger.error(f"Part object content error:\n{error}")
             elif content_type.startswith('image/'):
+
                 # Extract images and add them to related_parts var
                 cid = part["Content-ID"]
                 if cid:
