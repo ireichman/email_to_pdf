@@ -19,7 +19,7 @@ class EmailToHtml:
         self.msg: object = None
         self.msg_is_multipart: bool = False
 
-    def email_to_object(self):
+    def email_file_to_object(self):
 
         # Open email file for reading as binary and parse it into an email object
         try:
@@ -34,7 +34,7 @@ class EmailToHtml:
         if self.msg:
             self.msg_is_multipart: bool = self.msg.is_multipart()
 
-    def email_file_to_html(self):
+    def msg_object_to_html(self):
 
         # Open email file for reading as binary and parse it into an email object
         # with open(self.email_file, 'rb') as email_file:

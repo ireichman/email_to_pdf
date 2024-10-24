@@ -1,16 +1,15 @@
 from loguru import logger
 import os
 from pathlib import Path
-
-from pyhanko.pdf_utils.embed import embed_file
-
 from email_to_html import EmailToHtml
+
 
 def parse_email(mail_file: str) -> dict:
 
     logger.info(f"Parsing {mail_file}")
     email = EmailToHtml(email_file=mail_file)
-    email_parsed = email.email_file_to_html()
+    email.email_file_to_object()
+    email_parsed = email.msg_object_to_html()
     email_data = {"email_file": mail_file, "subject": email.email_subject, "date": email.email_date,
                   "body": email_parsed}
     return email_data
