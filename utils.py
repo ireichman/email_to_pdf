@@ -1,13 +1,41 @@
 from loguru import logger
 import os
 from pathlib import Path
-
 from email_to_html import EmailToHtml
+
+
+def find_working_directory() -> str:
+    """
+    Used for finding the current working directory.
+    :return: String with absolute path to working directory.
+    """
+    current_dir = os.getcwd()
+    return current_dir
+
+
+def delete_all_temp_files():
+    """
+    Used to empty the 'tmp' directory.
+    :return: Nothing.
+    """
+    folder_path = find_working_directory() + "/tmp/"
+    for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                os.rmdir(file_path)
+        except Exception as error:
+            logger.error(f"Error deleting temporary files. Error:\n{error}")
+
 
 def parse_email(mail_file: str) -> dict:
 
+    logger.info(f"Parsing {mail_file}")
     email = EmailToHtml(email_file=mail_file)
-    email_parsed = email.email_file_to_html()
+    email.email_file_to_object()
+    email_parsed = email.msg_object_to_html()
     email_data = {"email_file": mail_file, "subject": email.email_subject, "date": email.email_date,
                   "body": email_parsed}
     return email_data
@@ -33,6 +61,7 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
                 f"{email_name}")
     if naming_pattern:
         # Remove the file extension, if exists.
+        logger.debug(f"Removing file extension.")
         name: str = naming_pattern[0].split(".")[0]
     else:
         # Remove the file path and  extension.
@@ -40,7 +69,8 @@ def pdf_naming(naming_pattern: str = None, output_path: str = None, email_name: 
         name: str = email_file_parts.stem #email_name.split("/")[-1].split(".")[0]
 
     if output_path:
-        name = output_path + name
+        logger.debug(f"Adding user's path ({output_path}) to name ({name}).")
+        name: str = output_path + name
         path: str = output_path
 
     # Testing if file already exists and renaming if it does.

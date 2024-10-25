@@ -3,12 +3,13 @@ import sys
 from pdfkit import PDFKit
 from loguru import logger
 from argparse_funct import get_args
-from utils import pdf_naming, parse_email, check_file_or_path_exists
+from utils import pdf_naming, parse_email, check_file_or_path_exists, delete_all_temp_files
 
 # TODO: Add option for overwriting files???
 # TODO: Add option to print multiple emails to 1 pdf.
 # TODO: Add ability to get date from email (both metadata and text) for use with file name.
-# TODO: 1
+# TODO: Check for name split by '_' not just '-'. Change default naming to under score.
+# TODO: Does PDF has to have a page size or can it just be unlimited? (So it does not cut email).
 
 if __name__ == "__main__":
     args = get_args()
@@ -49,7 +50,7 @@ if args.output:
               f"\nAlternatively you could not specify this option to save in the same directory you run it from.")
         exit()
 else:
-    path_validated = ""
+    output_path = ""
 
 if args.output_name:
     logger.info(f"Argument received from output_name parameter: {args.output_name}")
@@ -59,15 +60,22 @@ else:
 
 # Parsing the emails and makes a list of strings. Each string is an HTML.
 list_of_emails_parsed = map(parse_email, list_of_emails_validated)
-logger.info(f"Parsed the list of email.")
+logger.info(f"Parsed the list of emails.")
 
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     print(f"Processing {email["email_file"]}")
-    pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=path_validated, email_name=email["email_file"])
-    pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose)
+    # Choosing a name for the output PDF
+    pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=output_path, email_name=email["email_file"])
+    logger.info(f"PDF name: {pdf_name}")
+    # Creating PDF object.
+    logger.info(f"Starting conversion to {pdf_name}")
+    pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose, options={"enable-local-file-access": True})
     pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
+
+# Delete all temp files and folders created in this session.
+delete_all_temp_files()
 
 print(f"Finished converting {len(args.source)} emails to PDFs.")
