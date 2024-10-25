@@ -68,6 +68,7 @@ for email in list_of_emails_parsed:
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=output_path, email_name=email["email_file"])
     logger.info(f"PDF name: {pdf_name}")
     # Creating PDF object.
+    logger.info(f"Starting conversion to {pdf_name}")
     pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose, options={"enable-local-file-access": True})
     pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")

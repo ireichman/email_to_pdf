@@ -113,15 +113,15 @@ class EmailToHtml:
         logger.debug(f"Related parts: {related_parts}")
 
         # Replace cid reference with actual inline image.
-        for cid, part in related_parts.items():
+        for part_cid, part_part in related_parts.items():
             # Decode the email part.
-            part_data = part.get_payload(decode=True)
+            part_data = part_part.get_payload(decode=True)
             # save the email part
-            part_file_name = part.get_filename() #or f"{cid}.png"
+            part_file_name = part_part.get_filename() or f"{part_cid}.png"
             with open(f"tmp/{part_file_name}", 'wb') as part_file:
                 part_file.write(part_data)
-            html_content = html_part.replace(f"cid:{cid}", f"/home/i/git/email_to_pdf/tmp/{part_file_name}")
-        return html_content
+            html_part = html_part.replace(f"cid:{part_cid}", f"/home/i/git/email_to_pdf/tmp/{part_file_name}")
+        return html_part
 
 
 
