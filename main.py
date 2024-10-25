@@ -64,9 +64,11 @@ logger.info(f"Parsed the list of emails.")
 # Convert HTML string from parsed email to PDF.
 for email in list_of_emails_parsed:
     print(f"Processing {email["email_file"]}")
+    # Choosing a name for the output PDF
     pdf_name = pdf_naming(naming_pattern=output_file_name, output_path=output_path, email_name=email["email_file"])
+    logger.info(f"PDF name: {pdf_name}")
     # Creating PDF object.
-    pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose)
+    pdf_o = PDFKit(url_or_file=email["body"], type_="string", verbose=args.verbose, options={"enable-local-file-access": True})
     pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
