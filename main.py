@@ -3,12 +3,13 @@ import sys
 from pdfkit import PDFKit
 from loguru import logger
 from argparse_funct import get_args
-from utils import pdf_naming, parse_email, check_file_or_path_exists
+from utils import pdf_naming, parse_email, check_file_or_path_exists, delete_all_temp_files
 
 # TODO: Add option for overwriting files???
 # TODO: Add option to print multiple emails to 1 pdf.
 # TODO: Add ability to get date from email (both metadata and text) for use with file name.
 # TODO: Check for name split by '_' not just '-'. Change default naming to under score.
+# TODO: Does PDF has to have a page size or can it just be unlimited? (So it does not cut email).
 
 if __name__ == "__main__":
     args = get_args()
@@ -73,5 +74,8 @@ for email in list_of_emails_parsed:
     pdf_o.to_pdf(path=pdf_name)
     logger.success(f"Converted {email["email_file"]} to {pdf_name} successfully.")
     print(f"Converted {email["email_file"]} to {pdf_name} successfully.")
+
+# Delete all temp files and folders created in this session.
+delete_all_temp_files()
 
 print(f"Finished converting {len(args.source)} emails to PDFs.")

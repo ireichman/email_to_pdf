@@ -8,6 +8,7 @@ from email import policy
 from loguru import logger
 
 
+
 class EmailToHtml:
     """
     Using 'email' library to convert eml files to HTML
@@ -112,6 +113,10 @@ class EmailToHtml:
                     related_parts[cid] = part
         logger.debug(f"Related parts: {related_parts}")
 
+        # Find the current working directory.
+        from utils import find_working_directory
+        current_dir = find_working_directory()
+
         # Replace cid reference with actual inline image.
         for part_cid, part_part in related_parts.items():
             # Decode the email part.
@@ -120,7 +125,7 @@ class EmailToHtml:
             part_file_name = part_part.get_filename() or f"{part_cid}.png"
             with open(f"tmp/{part_file_name}", 'wb') as part_file:
                 part_file.write(part_data)
-            html_part = html_part.replace(f"cid:{part_cid}", f"/home/i/git/email_to_pdf/tmp/{part_file_name}")
+            html_part = html_part.replace(f"cid:{part_cid}", f"{current_dir}/tmp/{part_file_name}")
         return html_part
 
 

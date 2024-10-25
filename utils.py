@@ -4,6 +4,32 @@ from pathlib import Path
 from email_to_html import EmailToHtml
 
 
+def find_working_directory() -> str:
+    """
+    Used for finding the current working directory.
+    :return: String with absolute path to working directory.
+    """
+    current_dir = os.getcwd()
+    return current_dir
+
+
+def delete_all_temp_files():
+    """
+    Used to empty the 'tmp' directory.
+    :return: Nothing.
+    """
+    folder_path = find_working_directory() + "/tmp/"
+    for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                os.rmdir(file_path)
+        except Exception as error:
+            logger.error(f"Error deleting temporary files. Error:\n{error}")
+
+
 def parse_email(mail_file: str) -> dict:
 
     logger.info(f"Parsing {mail_file}")
